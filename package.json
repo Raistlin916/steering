@@ -21,7 +21,8 @@
     "babel-preset-stage-0": "^6.16.0",
     "babel-preset-stage-3": "^6.17.0",
     "normalize.css": "^5.0.0",
-    "webpack": "^1.13.3"
+    "webpack": "^1.13.3",
+    "victor": "^1.1.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.5.2",
@@ -36,7 +37,6 @@
     "precss": "^1.4.0",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
-    "victor": "^1.1.0",
     "webpack-dev-server": "^1.16.2"
   }
 }
