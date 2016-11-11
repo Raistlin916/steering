@@ -27,22 +27,27 @@ const renderTarget = position => {
 
 const maxSpeed = 100
 const maxVelocity = new Vector(100, 100)
-const target = new Vector(200, 300)
-const position = new Vector(100, 50)
+const target = new Vector(400, 400)
+const position = new Vector(200, 200)
 const velocity = new Vector(100, 20)
-const mass = new Vector(100, 100)
 
 
 
 const update = dt => {
   dt = new Vector(dt, dt)
-
   const desiredVelocity = target.clone().subtract(position).norm().multiply(maxVelocity)
+
+  const dist = target.clone().subtract(position).length()
+  const percent = dist / 200
+  if (percent < 1) {
+    desiredVelocity.multiply(new Vector(percent, percent))
+  }
+
   const steering = desiredVelocity.clone().subtract(velocity)
 
   truncate(steering, maxSpeed)
-  steering.divide(mass)
-  truncate(velocity.add(steering), maxSpeed)
+
+  truncate(velocity.add(steering.clone().multiply(dt)), maxSpeed)
 
   position.add(velocity.clone().multiply(dt))
 }
@@ -54,7 +59,7 @@ setInterval(() => {
   const dt = (now - last) / 1000
   last = now
   update(dt)
-}, 5)
+}, 10)
 
 
 const r = () => {
