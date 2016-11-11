@@ -25,22 +25,25 @@ const renderTarget = position => {
   ctx.restore()
 }
 
-const maxVelocity = new Vector(100, 100)
 const maxSpeed = 100
+const maxVelocity = new Vector(100, 100)
 const target = new Vector(200, 300)
 const position = new Vector(100, 50)
+const velocity = new Vector(100, 20)
 const mass = new Vector(100, 100)
-const velocity = new Vector(20, 20)
+
 
 
 const update = dt => {
   dt = new Vector(dt, dt)
+
   const desiredVelocity = target.clone().subtract(position).norm().multiply(maxVelocity)
   const steering = desiredVelocity.clone().subtract(velocity)
 
-  truncate(steering, maxSpeed).divide(mass)
-
+  truncate(steering, maxSpeed)
+  steering.divide(mass)
   truncate(velocity.add(steering), maxSpeed)
+
   position.add(velocity.clone().multiply(dt))
 }
 
