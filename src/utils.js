@@ -17,11 +17,10 @@ const getRandomInt = (min, max) =>
     Math.floor(Math.random() * (max - min + 1)) + min
 
 const truncate = (origin, max) => {
-  const clone = origin.clone()
   if (origin.length() <= max) {
-    return clone
+    return origin
   }
-  return clone.norm().multiply({x: max, y: max})
+  return origin.norm().multiply({ x: max, y: max })
 }
 
 export {

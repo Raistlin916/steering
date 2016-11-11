@@ -9,7 +9,6 @@ canvas.height = 500
 const ctx = canvas.getContext('2d')
 
 const renderPoint = position => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
   ctx.save()
   ctx.beginPath()
   ctx.arc(position.x, position.y, 5, 0, Math.PI * 2)
@@ -19,24 +18,50 @@ const renderPoint = position => {
   ctx.restore()
 }
 
-const maxVelocity = new Vector(10, 10)
-const maxSpeed = 10
+const renderTarget = position => {
+  ctx.save()
+  ctx.fillStyle = 'green'
+  ctx.fillRect(position.x - 5, position.y - 5, 5, 5)
+  ctx.restore()
+}
+
+const maxVelocity = new Vector(100, 100)
+const maxSpeed = 100
 const target = new Vector(200, 300)
-let position = new Vector(100, 50)
-let velocity = new Vector(20, 20)
+const position = new Vector(100, 50)
+const mass = new Vector(100, 100)
+const velocity = new Vector(20, 20)
 
 
-const update = () => {
+const update = dt => {
+  dt = new Vector(dt, dt)
   const desiredVelocity = target.clone().subtract(position).norm().multiply(maxVelocity)
   const steering = desiredVelocity.clone().subtract(velocity)
 
-  velocity = truncate(velocity.clone().add(steering), maxSpeed)
-  position.add(velocity)
+  truncate(steering, maxSpeed).divide(mass)
 
-  target.add({ x: 10, y: 0 })
+  truncate(velocity.add(steering), maxSpeed)
+  position.add(velocity.clone().multiply(dt))
 }
 
+
+let last = Date.now()
 setInterval(() => {
-  update()
+  const now = Date.now()
+  const dt = (now - last) / 1000
+  last = now
+  update(dt)
+}, 5)
+
+
+const r = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
   renderPoint(position)
-}, 100)
+  renderTarget(target)
+  requestAnimationFrame(r)
+}
+r()
+
+
+canvas.onclick = e => target.copy({ x: e.x, y: e.y })
+
