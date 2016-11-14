@@ -26,7 +26,7 @@ setInterval(() => {
   const now = Date.now()
   const dt = (now - last) / 1000
   last = now
-  objs.forEach(item => item.update(dt, target))
+  objs.forEach(item => item.update(dt, target, { canvas }))
 }, 10)
 
 
