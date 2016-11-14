@@ -6,6 +6,7 @@ export default class Base {
     this.maxForce = 100
     this.position = new Vector(200, 200)
     this.velocity = new Vector(0, 0)
+    this.bgColor = 'red'
   }
 
   render(ctx) {
@@ -20,7 +21,7 @@ export default class Base {
     ctx.lineTo(-8, 8)
     ctx.lineTo(-8, -8)
     ctx.closePath()
-    ctx.fillStyle = 'red'
+    ctx.fillStyle = this.bgColor
     ctx.fill()
 
     ctx.beginPath()

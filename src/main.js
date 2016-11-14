@@ -1,5 +1,6 @@
 import 'normalize.css'
-import Arrow from './Arrow/Wonder'
+import Wonder from './Arrow/Wonder'
+import Pursuer from './Arrow/Pursuer'
 import Vector from './Vector'
 
 const canvas = document.createElement('canvas')
@@ -17,8 +18,11 @@ const renderTarget = position => {
 
 const target = new Vector(400, 400)
 const objs = []
-for (let i = 0; i < 10; i += 1) {
-  objs.push(new Arrow())
+objs.push(new Wonder())
+for (let i = 0; i < 1; i += 1) {
+  const pursuer = new Pursuer()
+  pursuer.setTarget(objs[0])
+  objs.push(pursuer)
 }
 
 let last = Date.now()
@@ -26,7 +30,7 @@ setInterval(() => {
   const now = Date.now()
   const dt = (now - last) / 1000
   last = now
-  objs.forEach(item => item.update(dt, target, { canvas }))
+  objs.forEach(item => item.update(dt, { canvas }))
 }, 10)
 
 

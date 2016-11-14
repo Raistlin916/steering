@@ -11,9 +11,10 @@ export default class Wonder extends Base {
     this.wanderAngle = 0
   }
 
-  update(dt, target, { canvas }) {
+  update(dt, { canvas }) {
     const { position } = this
-    if (position.x < 0 || position.y < 0 || position.x > canvas.width || position.y > canvas.height) {
+    if (position.x < 0 || position.y < 0 ||
+      position.x > canvas.width || position.y > canvas.height) {
       position.x = canvas.width / 2
       position.y = canvas.height / 2
     }
