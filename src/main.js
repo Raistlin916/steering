@@ -28,7 +28,6 @@ const renderPoint = (position, velocity) => {
   ctx.closePath()
   ctx.strokeStyle = 'white'
   ctx.stroke()
-
   ctx.restore()
 }
 
@@ -43,8 +42,6 @@ const maxSpeed = 100
 const target = new Vector(400, 400)
 const position = new Vector(200, 200)
 const velocity = new Vector(0, 0)
-
-
 
 const update = dt => {
   const desiredVelocity = target.clone().subtract(position).norm().scale(maxSpeed)
