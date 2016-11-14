@@ -1,12 +1,15 @@
 import Vector from '../Vector'
+import SteeringManager from '../SteeringManager'
 
 export default class Base {
   constructor() {
     this.maxSpeed = 100
-    this.maxForce = 100
+    this.maxForce = 1000
     this.position = new Vector(200, 200)
     this.velocity = new Vector(0, 0)
     this.bgColor = 'red'
+
+    this.steering = new SteeringManager(this)
   }
 
   render(ctx) {
@@ -33,16 +36,13 @@ export default class Base {
     ctx.restore()
   }
 
-  update(dt, ...args) {
-    const steering = this.getSteering(dt, ...args)
+  update(dt) {
+    const force = this.steering.get()
+    this.steering.update()
     const { velocity, maxSpeed, maxForce, position } = this
-    steering.truncate(maxForce)
-    velocity.add(steering.clone().scale(dt)).truncate(maxSpeed)
+    force.truncate(maxForce)
+    velocity.add(force.scale(dt)).truncate(maxSpeed)
     position.add(velocity.clone().scale(dt))
     return this
-  }
-
-  getSteering() {
-    return new Vector(0, 0)
   }
 }
