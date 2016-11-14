@@ -6,11 +6,14 @@ export default class Pursuer extends Seeker {
     this.bgColor = 'green'
   }
 
-  update(dt) {
-    const { target } = this
-    const targetPosition = target.position.clone().add(target.velocity.clone().scale(dt * 10))
-    this.steering = this.seek(targetPosition)
+  getSteering(dt) {
+    const targetPosition = this.pursuit(dt)
+    return this.seek(targetPosition)
+  }
 
-    this.originUpdate(dt)
+  pursuit(dt) {
+    const { target } = this
+    const updatesNeeded = this.position.distance(target.position) / this.maxSpeed
+    return target.position.clone().add(target.velocity.clone().scale(dt * updatesNeeded))
   }
 }

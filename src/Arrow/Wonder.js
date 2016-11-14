@@ -11,6 +11,10 @@ export default class Wonder extends Base {
     this.wanderAngle = 0
   }
 
+  getSteering(dt) {
+    return this.wander(this.velocity, dt)
+  }
+
   update(dt, { canvas }) {
     const { position } = this
     if (position.x < 0 || position.y < 0 ||
@@ -18,8 +22,7 @@ export default class Wonder extends Base {
       position.x = canvas.width / 2
       position.y = canvas.height / 2
     }
-    this.steering = this.wander(this.velocity, dt)
-    super.update(dt)
+    super.update(dt, { canvas })
   }
 
   wander() {

@@ -1,22 +1,27 @@
 import Base from './Base'
 
 export default class Seeker extends Base {
-  seek(target) {
+  seek(target, slowingRadius = 20) {
     const { position, maxSpeed, velocity } = this
-    const desiredVelocity = target.clone().subtract(position).norm().scale(maxSpeed)
-    return desiredVelocity.clone().subtract(velocity)
+    const desired = target.clone().subtract(position)
+    const distance = desired.length()
+    desired.scale(maxSpeed * Math.min(distance / slowingRadius, 1))
+    return desired.subtract(velocity)
+  }
+
+  flee(target, slowingRadius = 20) {
+    const { position, maxSpeed, velocity } = this
+    const desired = position.clone().subtract(target)
+    const distance = desired.length()
+    desired.scale(maxSpeed * Math.min(distance / slowingRadius, 1))
+    return desired.subtract(velocity)
   }
 
   setTarget(target) {
     this.target = target
   }
 
-  originUpdate(...args) {
-    super.update(...args)
-  }
-
-  update(dt) {
-    this.steering = this.seek(this.target)
-    this.originUpdate.update(dt)
+  getSteering() {
+    return this.seek(this.target)
   }
 }

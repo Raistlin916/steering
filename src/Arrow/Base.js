@@ -33,11 +33,16 @@ export default class Base {
     ctx.restore()
   }
 
-  update(dt) {
-    const { steering, velocity, maxSpeed, maxForce, position } = this
+  update(dt, ...args) {
+    const steering = this.getSteering(dt, ...args)
+    const { velocity, maxSpeed, maxForce, position } = this
     steering.truncate(maxForce)
     velocity.add(steering.clone().scale(dt)).truncate(maxSpeed)
     position.add(velocity.clone().scale(dt))
     return this
+  }
+
+  getSteering() {
+    return new Vector(0, 0)
   }
 }
