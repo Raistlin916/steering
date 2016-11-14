@@ -1,5 +1,3 @@
-import Vector from 'victor'
-
 const debounce = (() => {
   let tid = null;
   return (fn, delay) => {
@@ -16,6 +14,9 @@ const debounce = (() => {
 const getRandomInt = (min, max) =>
     Math.floor(Math.random() * (max - min + 1)) + min
 
+const getRandom = (min, max) =>
+  Math.random() * (max - min) + min
+
 const truncate = (origin, max) => {
   if (origin.length() <= max) {
     return origin
@@ -26,5 +27,6 @@ const truncate = (origin, max) => {
 export {
   debounce,
   getRandomInt,
+  getRandom,
   truncate
 }

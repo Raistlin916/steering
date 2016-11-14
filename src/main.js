@@ -1,6 +1,6 @@
 import 'normalize.css'
+import wonder from './actions/wonder'
 import Vector from './vector'
-import { truncate } from './utils'
 
 const canvas = document.createElement('canvas')
 document.body.appendChild(canvas)
@@ -38,28 +38,15 @@ const renderTarget = position => {
   ctx.restore()
 }
 
+
+
+
 const maxSpeed = 100
 const target = new Vector(400, 400)
 const position = new Vector(200, 200)
 const velocity = new Vector(0, 0)
 
-const update = dt => {
-  const desiredVelocity = target.clone().subtract(position).norm().scale(maxSpeed)
-
-  const dist = target.clone().subtract(position).length()
-  const percent = dist / 200
-  if (percent < 1) {
-    desiredVelocity.scale(percent)
-  }
-  const steering = desiredVelocity.clone().subtract(velocity)
-
-  truncate(steering, maxSpeed)
-
-  truncate(velocity.add(steering.clone().scale(dt)), maxSpeed)
-
-  position.add(velocity.clone().scale(dt))
-}
-
+const update = wonder({ maxSpeed, position, target, velocity })
 
 let last = Date.now()
 setInterval(() => {
