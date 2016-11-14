@@ -17,16 +17,8 @@ const getRandomInt = (min, max) =>
 const getRandom = (min, max) =>
   Math.random() * (max - min) + min
 
-const truncate = (origin, max) => {
-  if (origin.length() <= max) {
-    return origin
-  }
-  return origin.norm().multiply({ x: max, y: max })
-}
-
 export {
   debounce,
   getRandomInt,
-  getRandom,
-  truncate
+  getRandom
 }
