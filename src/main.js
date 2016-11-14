@@ -8,27 +8,41 @@ canvas.width = 500
 canvas.height = 500
 const ctx = canvas.getContext('2d')
 
-const renderPoint = position => {
+const renderPoint = (position, velocity) => {
   ctx.save()
+  ctx.translate(position.x, position.y)
+  const angle = velocity.angle()
+  ctx.rotate(angle)
+
   ctx.beginPath()
-  ctx.arc(position.x, position.y, 5, 0, Math.PI * 2)
+  ctx.moveTo(20, 0)
+  ctx.lineTo(-8, 8)
+  ctx.lineTo(-8, -8)
   ctx.closePath()
   ctx.fillStyle = 'red'
   ctx.fill()
+
+  ctx.beginPath()
+  ctx.moveTo(0, 0)
+  ctx.lineTo(20, 0)
+  ctx.closePath()
+  ctx.strokeStyle = 'white'
+  ctx.stroke()
+
   ctx.restore()
 }
 
 const renderTarget = position => {
   ctx.save()
   ctx.fillStyle = 'green'
-  ctx.fillRect(position.x - 5, position.y - 5, 5, 5)
+  ctx.fillRect(position.x - 2.5, position.y - 2.5, 5, 5)
   ctx.restore()
 }
 
 const maxSpeed = 100
 const target = new Vector(400, 400)
 const position = new Vector(200, 200)
-const velocity = new Vector(100, 20)
+const velocity = new Vector(0, 0)
 
 
 
@@ -44,7 +58,7 @@ const update = dt => {
 
   truncate(steering, maxSpeed)
 
-  truncate(velocity.add(steering.clone().scale(dt * 10)), maxSpeed)
+  truncate(velocity.add(steering.clone().scale(dt)), maxSpeed)
 
   position.add(velocity.clone().scale(dt))
 }
@@ -61,7 +75,7 @@ setInterval(() => {
 
 const r = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
-  renderPoint(position)
+  renderPoint(position, velocity)
   renderTarget(target)
   requestAnimationFrame(r)
 }
