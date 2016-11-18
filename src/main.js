@@ -8,7 +8,9 @@ let ship
 let obstacles
 const onInit = objs => {
   ship = new Arrow()
-
+  objs.push(new Obstacle(new Vector(100, 100), 20))
+  objs.push(new Obstacle(new Vector(200, 100), 30))
+  objs.push(new Obstacle(new Vector(200, 200), 40))
   objs.push(new Obstacle(new Vector(100, 160), 20))
 
   obstacles = objs.slice(0, 4)

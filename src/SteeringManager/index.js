@@ -3,8 +3,8 @@ import { getRandom } from '../utils'
 
 const CIRCLE_DISTANCE = 50
 const CIRCLE_RADIUS = 150
-const MAX_SEE_AHEAD = 100
 const MAX_AVOID_FORCE = 10000
+const MAX_SEE_AHEAD = 100
 
 function lineIntersectsCircle(ahead, ahead2, obstacle) {
   const obstaclePosition = obstacle.getPosition()
@@ -44,14 +44,15 @@ export default class SteeringManager {
 
   doSeek(targetPosition, slowingRadius) {
     const position = this.host.getPosition()
-    const maxSpeed = this.host.getMaxSpeed()
     const velocity = this.host.getVelocity()
+    const maxSpeed = this.host.getMaxSpeed()
+    const maxForce = this.host.getMaxForce()
 
     const desired = targetPosition.clone().subtract(position)
     const distance = desired.length()
     const slowingPercent = Math.min(distance / slowingRadius, 1)
     desired.scale(maxSpeed * slowingPercent)
-    return desired.subtract(velocity)
+    return desired.subtract(velocity).truncate(maxForce)
   }
 
   flee(targetPosition) {
@@ -61,12 +62,13 @@ export default class SteeringManager {
 
   doFlee(targetPosition) {
     const position = this.host.getPosition()
-    const maxSpeed = this.host.getMaxSpeed()
     const velocity = this.host.getVelocity()
+    const maxSpeed = this.host.getMaxSpeed()
+    const maxForce = this.host.getMaxForce()
 
     const desired = position.subtract(targetPosition)
     desired.scale(maxSpeed)
-    return desired.subtract(velocity)
+    return desired.subtract(velocity).truncate(maxForce)
   }
 
   pursuit(target) {
@@ -91,9 +93,7 @@ export default class SteeringManager {
   }
 
   collisionAvoidance(obstacles) {
-    const position = this.host.getPosition()
-    const velocity = this.host.getVelocity()
-    const ahead = position.clone().add(velocity.norm().scale(MAX_SEE_AHEAD))
+    const ahead = this.getAhead()
 
     let avoidance = new Vector(0, 0)
     const obstacle = this.findClonestObstacle(obstacles)
@@ -106,11 +106,19 @@ export default class SteeringManager {
     return this
   }
 
-  findClonestObstacle(obstacles) {
+  getAhead(p = 1) {
     const position = this.host.getPosition()
     const velocity = this.host.getVelocity()
-    const ahead = position.clone().add(velocity.norm().scale(MAX_SEE_AHEAD))
-    const aheadHalf = position.clone().add(velocity.norm().scale(MAX_SEE_AHEAD * 0.5))
+    const maxSpeed = this.host.getMaxSpeed()
+
+    const percent = velocity.length() / maxSpeed
+    return position.clone().add(velocity.norm().scale(MAX_SEE_AHEAD * p))
+  }
+
+  findClonestObstacle(obstacles) {
+    const position = this.host.getPosition()
+    const ahead = this.getAhead()
+    const aheadHalf = this.getAhead(0.5)
     let clonestObstacle = null
 
     obstacles.forEach(item => {
