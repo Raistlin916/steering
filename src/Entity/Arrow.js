@@ -1,12 +1,9 @@
-import Vector from '../Vector'
+import Base from './Base'
 import SteeringManager from '../SteeringManager'
 
-export default class Base {
-  constructor() {
-    this.maxSpeed = 100
-    this.maxForce = 1000
-    this.position = new Vector(200, 200)
-    this.velocity = new Vector(0, 0)
+export default class Arrow extends Base {
+  constructor(...args) {
+    super(...args)
     this.bgColor = 'red'
 
     this.steering = new SteeringManager(this)

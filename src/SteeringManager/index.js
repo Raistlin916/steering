@@ -3,6 +3,16 @@ import { getRandom } from '../utils'
 
 const CIRCLE_DISTANCE = 50
 const CIRCLE_RADIUS = 150
+const MAX_SEE_AHEAD = 100
+const MAX_AVOID_FORCE = 10000
+
+function lineIntersectsCircle(ahead, ahead2, obstacle) {
+  const obstaclePosition = obstacle.getPosition()
+  const { radius } = obstacle
+
+  return obstaclePosition.distance(ahead) <= radius ||
+      obstaclePosition.distance(ahead2) <= radius
+}
 
 export default class SteeringManager {
   constructor(host) {
@@ -13,9 +23,9 @@ export default class SteeringManager {
   }
 
   wander() {
-    const { velocity } = this.host
+    const velocity = this.host.getVelocity()
     const { wanderAngle } = this
-    const circleCenter = velocity.clone().norm().scale(CIRCLE_DISTANCE)
+    const circleCenter = velocity.norm().scale(CIRCLE_DISTANCE)
     const displacement = new Vector(0, -CIRCLE_RADIUS)
 
     displacement.setAngle(wanderAngle)
@@ -33,7 +43,10 @@ export default class SteeringManager {
   }
 
   doSeek(targetPosition, slowingRadius) {
-    const { position, maxSpeed, velocity } = this.host
+    const position = this.host.getPosition()
+    const maxSpeed = this.host.getMaxSpeed()
+    const velocity = this.host.getVelocity()
+
     const desired = targetPosition.clone().subtract(position)
     const distance = desired.length()
     const slowingPercent = Math.min(distance / slowingRadius, 1)
@@ -47,8 +60,11 @@ export default class SteeringManager {
   }
 
   doFlee(targetPosition) {
-    const { position, maxSpeed, velocity } = this.host
-    const desired = position.clone().subtract(targetPosition)
+    const position = this.host.getPosition()
+    const maxSpeed = this.host.getMaxSpeed()
+    const velocity = this.host.getVelocity()
+
+    const desired = position.subtract(targetPosition)
     desired.scale(maxSpeed)
     return desired.subtract(velocity)
   }
@@ -66,9 +82,48 @@ export default class SteeringManager {
   }
 
   getPredictPosition(target, dt) {
-    const updatesNeeded = this.host.position.distance(target.position) / this.host.maxSpeed
+    const position = this.host.getPosition()
+    const maxSpeed = this.host.getMaxSpeed()
+
+    const updatesNeeded = position.distance(target.position) / maxSpeed
     return target.position.clone()
           .add(target.velocity.clone().scale(dt * updatesNeeded))
+  }
+
+  collisionAvoidance(obstacles) {
+    const position = this.host.getPosition()
+    const velocity = this.host.getVelocity()
+    const ahead = position.clone().add(velocity.norm().scale(MAX_SEE_AHEAD))
+
+    let avoidance = new Vector(0, 0)
+    const obstacle = this.findClonestObstacle(obstacles)
+
+    if (obstacle) {
+      avoidance = ahead.subtract(obstacle.getPosition()).norm().scale(MAX_AVOID_FORCE)
+    }
+
+    this.steering.add(avoidance)
+    return this
+  }
+
+  findClonestObstacle(obstacles) {
+    const position = this.host.getPosition()
+    const velocity = this.host.getVelocity()
+    const ahead = position.clone().add(velocity.norm().scale(MAX_SEE_AHEAD))
+    const aheadHalf = position.clone().add(velocity.norm().scale(MAX_SEE_AHEAD * 0.5))
+    let clonestObstacle = null
+
+    obstacles.forEach(item => {
+      const collision = lineIntersectsCircle(ahead, aheadHalf, item)
+      if (collision &&
+        (!clonestObstacle ||
+          item.getPosition().distance(position) <
+            clonestObstacle.getPosition().distance(position)
+          )) {
+        clonestObstacle = item
+      }
+    })
+    return clonestObstacle
   }
 
   get() {

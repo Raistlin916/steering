@@ -12,10 +12,10 @@ export default class World {
 
     this.target = new Vector(400, 400)
     canvas.onclick = e => {
-      if (this.target) {
-        this.target = null
-        return
-      }
+      // if (this.target) {
+      //   this.target = null
+      //   return
+      // }
       this.target = new Vector(e.x, e.y)
     }
 
@@ -48,7 +48,7 @@ export default class World {
       const dt = (now - last) / 1000
       last = now
       this.onUpdate(this.objs, this.target)
-      this.objs.forEach(item => item.update(dt, { canvas }))
+      this.objs.forEach(item => item.update && item.update(dt, { canvas }))
     }, 10)
   }
 }
