@@ -3,15 +3,16 @@ import { getRandom } from '../utils'
 
 const CIRCLE_DISTANCE = 50
 const CIRCLE_RADIUS = 150
-const MAX_AVOID_FORCE = 10000
-const MAX_SEE_AHEAD = 100
+const MAX_AVOID_FORCE = 1000
+const MAX_SEE_AHEAD = 10
 
-function lineIntersectsCircle(ahead, ahead2, obstacle) {
+function lineIntersectsCircle(pt, pt2, pt3, obstacle) {
   const obstaclePosition = obstacle.getPosition()
   const { radius } = obstacle
 
-  return obstaclePosition.distance(ahead) <= radius ||
-      obstaclePosition.distance(ahead2) <= radius
+  return obstaclePosition.distance(pt) <= radius ||
+      obstaclePosition.distance(pt2) <= radius ||
+      obstaclePosition.distance(pt3) <= radius
 }
 
 export default class SteeringManager {
@@ -118,11 +119,12 @@ export default class SteeringManager {
   findClonestObstacle(obstacles) {
     const position = this.host.getPosition()
     const ahead = this.getAhead()
-    const aheadHalf = this.getAhead(0.5)
+    const ahead2 = this.getAhead(0.5)
+    const ahead3 = this.getAhead(0)
     let clonestObstacle = null
 
     obstacles.forEach(item => {
-      const collision = lineIntersectsCircle(ahead, aheadHalf, item)
+      const collision = lineIntersectsCircle(ahead, ahead2, item)
       if (collision &&
         (!clonestObstacle ||
           item.getPosition().distance(position) <
