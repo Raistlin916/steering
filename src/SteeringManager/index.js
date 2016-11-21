@@ -10,7 +10,7 @@ function lineIntersectsCircle(pt, pt2, obstacle) {
   const { radius } = obstacle
 
   return obstaclePosition.distance(pt) <= radius ||
-      obstaclePosition.distance(pt2) <= radius
+    obstaclePosition.distance(pt2) <= radius
 }
 
 export default class SteeringManager {
@@ -110,7 +110,7 @@ export default class SteeringManager {
     const velocity = this.host.getVelocity()
     const maxSpeed = this.host.getMaxSpeed()
 
-    return position.clone().add(velocity.norm().scale(maxSpeed * this.lastDt * p))
+    return position.clone().add(velocity.norm().scale(maxSpeed * 0.1 * p))
   }
 
   findClonestObstacle(obstacles) {
