@@ -38,7 +38,7 @@ export default class SteeringManager {
     return this
   }
 
-  seek(targetPosition, slowingRadius = 10) {
+  seek(targetPosition, slowingRadius = 50) {
     this.steering.add(this.doSeek(targetPosition, slowingRadius))
     return this
   }
