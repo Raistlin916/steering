@@ -30,12 +30,15 @@ export default class Arrow extends Base {
     ctx.closePath()
     ctx.strokeStyle = 'white'
     ctx.stroke()
+
+    ctx.fillStyle = 'blue'
+    ctx.fillRect(-1, -1, 2, 2)
     ctx.restore()
   }
 
   update(dt) {
     const force = this.steering.get()
-    this.steering.update()
+    this.steering.update(dt)
     const { velocity, maxSpeed, maxForce, position } = this
     force.truncate(maxForce)
     velocity.add(force.scale(dt)).truncate(maxSpeed)
