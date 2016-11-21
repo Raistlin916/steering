@@ -2,29 +2,50 @@ import World from './World'
 import Arrow from './Entity/Arrow'
 import Obstacle from './Entity/Obstacle'
 import Vector from './Vector'
+import Path from './Entity/Path'
 
 
-let ship
-let obstacles
+const ships = []
+ships.push(new Arrow(new Vector(0, 0)))
+ships.push(new Arrow(new Vector(50, 0)))
+ships.push(new Arrow(new Vector(100, 0)))
+ships.push(new Arrow(new Vector(150, 0)))
+ships.push(new Arrow(new Vector(350, 400)))
+ships.push(new Arrow(new Vector(300, 400)))
+
+const obstacles = []
+obstacles.push(new Obstacle(new Vector(100, 100), 20))
+obstacles.push(new Obstacle(new Vector(200, 100), 30))
+obstacles.push(new Obstacle(new Vector(200, 200), 40))
+obstacles.push(new Obstacle(new Vector(100, 160), 20))
+
+
+const path = new Path()
+path.add(new Vector(20, 20))
+path.add(new Vector(80, 30))
+path.add(new Vector(30, 100))
+path.add(new Vector(200, 70))
+path.add(new Vector(200, 170))
+
 const onInit = objs => {
-  ship = new Arrow()
   objs.push(new Obstacle(new Vector(100, 100), 20))
   objs.push(new Obstacle(new Vector(200, 100), 30))
-  // objs.push(new Obstacle(new Vector(200, 200), 40))
+  objs.push(new Obstacle(new Vector(200, 200), 40))
   objs.push(new Obstacle(new Vector(100, 160), 20))
 
-  obstacles = objs.slice(0, 4)
-
-  objs.push(ship)
+  obstacles.forEach(item => objs.push(item))
+  ships.forEach(item => objs.push(item))
+  objs.push(path)
 }
 
 const onUpdate = (objs, target) => {
-  if (target) {
-    ship.steering.seek(target)
-  } else {
-    ship.steering.wander()
-  }
-  ship.steering.collisionAvoidance(obstacles)
+  // if (target) {
+  //   ship.steering.seek(target)
+  // } else {
+  //   ship.steering.wander()
+  // }
+  ships.forEach(item => item.steering.walkOn(path))
+  ships.forEach(item => item.steering.collisionAvoidance(obstacles))
 }
 
 const world = new World(onInit, onUpdate)

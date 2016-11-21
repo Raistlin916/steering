@@ -19,6 +19,8 @@ export default class SteeringManager {
     this.wanderAngle = 0
     this.host = host
     this.lastDt = 0
+    this.currentPointOnPath = 0
+    this.pathDir = 1
   }
 
   wander() {
@@ -139,5 +141,21 @@ export default class SteeringManager {
   update(dt) {
     this.lastDt = dt
     this.steering = new Vector(0, 0)
+  }
+
+  walkOn(path) {
+    let currentPoint = path.get(this.currentPointOnPath)
+    const position = this.host.getPosition()
+
+    if (!path.get(this.pathDir + this.currentPointOnPath)) {
+      this.pathDir *= -1
+    }
+
+    if (position.distance(currentPoint) < 10) {
+      this.currentPointOnPath += this.pathDir
+    }
+    currentPoint = path.get(this.currentPointOnPath)
+
+    this.seek(currentPoint)
   }
 }
