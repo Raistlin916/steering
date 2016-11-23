@@ -40,7 +40,7 @@ export default class Arrow extends Base {
     this.steering.update(dt)
     const { velocity, maxSpeed, maxForce, position } = this
     force.truncate(maxForce)
-    velocity.add(force.scale(dt)).truncate(maxSpeed)
+    velocity.add(force).truncate(maxSpeed)
     position.add(velocity.clone().scale(dt))
     return this
   }

@@ -39,14 +39,23 @@ const onInit = objs => {
 }
 
 const onUpdate = (objs, target) => {
-  ships.forEach(item => {
-    if (target) {
+  // ships.forEach(item => {
+  //   if (target) {
+  //     item.steering.seek(target)
+  //   } else {
+  //     item.steering.wander()
+  //   }
+  // })
+  // ships.forEach(item => item.steering.walkOn(path))
+
+  ships.forEach((item, index) => {
+    if (index === 0) {
       item.steering.seek(target)
     } else {
-      item.steering.wander()
+      item.steering.followLeader(ships[0], ships)
     }
   })
-  // ships.forEach(item => item.steering.walkOn(path))
+
   ships.forEach(item => item.steering.collisionAvoidance(obstacles))
 }
 

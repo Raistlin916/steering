@@ -3,7 +3,11 @@ import { getRandom } from '../utils'
 
 const CIRCLE_DISTANCE = 50
 const CIRCLE_RADIUS = 150
-const MAX_AVOID_FORCE = 1000
+const MAX_AVOID_FORCE = 30
+const SEPARATION_RADIUS = 50
+const MAX_SEPARATION = 20
+const LEADER_BEHIND_DIST = 50
+const LEADER_SIGHT_RADIUS = 50
 
 function lineIntersectsCircle(pt, pt2, obstacle) {
   const obstaclePosition = obstacle.getPosition()
@@ -54,7 +58,7 @@ export default class SteeringManager {
     const rampedSpeed = maxSpeed * (distance / slowingRadius)
     const clippedSpeed = Math.min(rampedSpeed, maxSpeed)
     const desiredVelocity = targetOffset.scale(clippedSpeed / distance)
-    const steering = desiredVelocity.subtract(velocity).scale(1 / this.lastDt)
+    const steering = desiredVelocity.subtract(velocity)
     return steering.truncate(maxForce)
   }
 
@@ -134,6 +138,51 @@ export default class SteeringManager {
       }
     })
     return clonestObstacle
+  }
+
+  followLeader(leader, entities) {
+    const tv = leader.getVelocity().norm().scale(LEADER_BEHIND_DIST)
+    const ahead = leader.getPosition().add(tv)
+    const behind = leader.getPosition().add(tv.scale(-1))
+
+    if (this.isOnLeaderSight(leader, ahead)) {
+      this.evade(leader)
+    }
+
+    this.seek(behind, 50)
+    this.separation(entities)
+
+    return this
+  }
+
+  isOnLeaderSight(leader, leaderAhead) {
+    const position = this.host.getPosition()
+    return leaderAhead.distance(position) <= LEADER_SIGHT_RADIUS ||
+      leader.getPosition().distance(position) <= LEADER_SIGHT_RADIUS
+  }
+
+  separation(entities) {
+    const position = this.host.getPosition()
+    const force = new Vector(0, 0)
+    let neighborCount = 0
+
+    entities.forEach(item => {
+      if (item === this) {
+        return
+      }
+      const itemPosition = item.getPosition()
+      if (position.distance(itemPosition) < SEPARATION_RADIUS) {
+        force.add(itemPosition.subtract(position))
+        neighborCount += 1
+      }
+    })
+    if (neighborCount) {
+      force.scale(-1 / neighborCount)
+    }
+
+    force.truncate(MAX_SEPARATION)
+    this.steering.add(force)
+    return this
   }
 
   get() {
