@@ -18,7 +18,7 @@ export default class SteeringManager {
     this.steering = new Vector(0, 0)
     this.wanderAngle = 0
     this.host = host
-    this.lastDt = 0
+    this.lastDt = 0.01
     this.currentPointOnPath = 0
     this.pathDir = 1
   }
@@ -49,11 +49,13 @@ export default class SteeringManager {
     const maxSpeed = this.host.getMaxSpeed()
     const maxForce = this.host.getMaxForce()
 
-    const desired = targetPosition.clone().subtract(position)
-    const distance = desired.length()
-    const slowingPercent = Math.min(distance / slowingRadius, 1)
-    desired.scale(maxSpeed * slowingPercent)
-    return desired.subtract(velocity).truncate(maxForce)
+    const targetOffset = targetPosition.clone().subtract(position)
+    const distance = targetOffset.length()
+    const rampedSpeed = maxSpeed * (distance / slowingRadius)
+    const clippedSpeed = Math.min(rampedSpeed, maxSpeed)
+    const desiredVelocity = targetOffset.scale(clippedSpeed / distance)
+    const steering = desiredVelocity.subtract(velocity).scale(1 / this.lastDt)
+    return steering.truncate(maxForce)
   }
 
   flee(targetPosition) {
