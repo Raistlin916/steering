@@ -4,10 +4,10 @@ import { getRandom } from '../utils'
 const CIRCLE_DISTANCE = 50
 const CIRCLE_RADIUS = 150
 const MAX_AVOID_FORCE = 30
-const SEPARATION_RADIUS = 50
-const MAX_SEPARATION = 20
 const LEADER_BEHIND_DIST = 50
 const LEADER_SIGHT_RADIUS = 50
+
+const SIGHT_RADIUS = 50
 
 function lineIntersectsCircle(pt, pt2, obstacle) {
   const obstaclePosition = obstacle.getPosition()
@@ -171,7 +171,7 @@ export default class SteeringManager {
         return
       }
       const itemPosition = item.getPosition()
-      if (position.distance(itemPosition) < SEPARATION_RADIUS) {
+      if (position.distance(itemPosition) < SIGHT_RADIUS) {
         force.add(itemPosition.subtract(position))
         neighborCount += 1
       }
@@ -180,7 +180,6 @@ export default class SteeringManager {
       force.scale(-1 / neighborCount)
     }
 
-    force.truncate(MAX_SEPARATION)
     this.steering.add(force)
     return this
   }
