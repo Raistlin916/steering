@@ -2,10 +2,11 @@ import Base from './Base'
 import BoidSteeringManager from '../components/BoidSteeringManager'
 
 export default class Arrow extends Base {
-  constructor(position, velocity) {
+  constructor(position, velocity, extra = {}) {
     super(position, velocity)
     this.bgColor = 'red'
     this.steering = new BoidSteeringManager(this)
+    this.debug = extra.debug
   }
 
   render(ctx) {
