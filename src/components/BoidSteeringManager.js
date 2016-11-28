@@ -1,7 +1,7 @@
 import Vector from '../Vector'
 import SteeringManager from './SteeringManager'
 
-const SIGHT_RADIUS = 30
+const SIGHT_RADIUS = 50
 const LEADER_BEHIND_DIST = 50
 const LEADER_SIGHT_RADIUS = 50
 
@@ -39,6 +39,8 @@ export default class BoidSteeringManager extends SteeringManager {
   separate(entities) {
     const position = this.host.getPosition()
     const maxForce = this.host.getMaxForce()
+    const maxSpeed = this.host.getMaxSpeed()
+    const velocity = this.host.getVelocity()
     const force = new Vector(0, 0)
     let neighborCount = 0
 
@@ -47,13 +49,23 @@ export default class BoidSteeringManager extends SteeringManager {
         return
       }
       const itemPosition = item.getPosition()
-      if (position.distance(itemPosition) < SIGHT_RADIUS) {
-        force.add(itemPosition.subtract(position))
+      const dist = position.distance(itemPosition)
+      if (dist > 0 && dist < SIGHT_RADIUS / 2) {
+        const diff = position.subtract(itemPosition).norm().scale(1 / dist)
+        force.add(diff)
         neighborCount += 1
       }
     })
     if (neighborCount) {
-      force.scale(-1 / neighborCount).truncate(maxForce)
+      force
+        .scale(1 / neighborCount)
+    }
+    if (force.length() > 0) {
+      force.norm()
+        .scale(maxSpeed)
+        .subtract(velocity)
+        .truncate(maxForce)
+        .scale(1.5)
       this.steering.add(force)
     }
     return this
@@ -63,7 +75,8 @@ export default class BoidSteeringManager extends SteeringManager {
     const position = this.host.getPosition()
     const velocity = this.host.getVelocity()
     const maxForce = this.host.getMaxForce()
-    const desiredVelocity = new Vector(0, 0)
+    const maxSpeed = this.host.getMaxSpeed()
+    const sum = new Vector(0, 0)
     let neighborCount = 0
 
     entities.forEach(item => {
@@ -71,14 +84,17 @@ export default class BoidSteeringManager extends SteeringManager {
         return
       }
       const itemPosition = item.getPosition()
-      if (position.distance(itemPosition) < SIGHT_RADIUS) {
-        desiredVelocity.add(item.getVelocity())
+      const dist = position.distance(itemPosition)
+      if (dist > 0 && dist < SIGHT_RADIUS) {
+        sum.add(item.getVelocity())
         neighborCount += 1
       }
     })
     if (neighborCount) {
-      desiredVelocity.scale(1 / neighborCount)
-      const force = desiredVelocity.subtract(velocity).truncate(maxForce)
+      sum.scale(1 / neighborCount)
+        .norm()
+        .scale(maxSpeed)
+      const force = sum.subtract(velocity).truncate(maxForce)
       this.steering.add(force)
     }
     return this
@@ -86,9 +102,6 @@ export default class BoidSteeringManager extends SteeringManager {
 
   cohesion(entities) {
     const position = this.host.getPosition()
-    const velocity = this.host.getVelocity()
-    const maxForce = this.host.getMaxForce()
-    const maxSpeed = this.host.getMaxSpeed()
     const desiredPosition = new Vector(0, 0)
     let neighborCount = 0
 
@@ -97,16 +110,15 @@ export default class BoidSteeringManager extends SteeringManager {
         return
       }
       const itemPosition = item.getPosition()
-      if (position.distance(itemPosition) < SIGHT_RADIUS) {
+      const dist = position.distance(itemPosition)
+      if (dist > 0 && dist < SIGHT_RADIUS) {
         desiredPosition.add(item.getPosition())
         neighborCount += 1
       }
     })
     if (neighborCount) {
       desiredPosition.scale(1 / neighborCount)
-      const desiredVelocity = desiredPosition.subtract(position).scale(1 / maxSpeed)
-      const force = desiredVelocity.subtract(velocity).truncate(maxForce)
-      this.steering.add(force)
+      this.seek(desiredPosition)
     }
     return this
   }

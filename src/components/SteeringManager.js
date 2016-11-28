@@ -38,12 +38,20 @@ export default class SteeringManager {
     return this
   }
 
-  seek(targetPosition, slowingRadius = 50) {
-    this.steering.add(this.doSeek(targetPosition, slowingRadius))
+  seek(targetPosition) {
+    const position = this.host.getPosition()
+    const maxSpeed = this.host.getMaxSpeed()
+    const velocity = this.host.getVelocity()
+    const maxForce = this.host.getMaxForce()
+
+    const desired = targetPosition.subtract(position).norm().scale(maxSpeed)
+    const force = desired.subtract(velocity).truncate(maxForce)
+
+    this.steering.add(force)
     return this
   }
 
-  doSeek(targetPosition, slowingRadius) {
+  doSeek(targetPosition, slowingRadius = 50) {
     const position = this.host.getPosition()
     const velocity = this.host.getVelocity()
     const maxSpeed = this.host.getMaxSpeed()

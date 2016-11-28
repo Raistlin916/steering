@@ -5,15 +5,13 @@ import Vector from './Vector'
 import Path from './Entity/Path'
 
 
+const width = 640
+const height = 360
 const ships = []
-ships.push(new Arrow(new Vector(0, 0), new Vector(10, 10)))
-ships.push(new Arrow(new Vector(50, 0)))
-ships.push(new Arrow(new Vector(100, 0)))
-ships.push(new Arrow(new Vector(150, 0)))
-ships.push(new Arrow(new Vector(350, 400)))
-ships.push(new Arrow(new Vector(300, 400)))
 
-ships.push(new Arrow(new Vector(250, 250), null, { debug: true }))
+for (let i = 0; i < 150; i += 1) {
+  ships.push(new Arrow(new Vector(width / 2, height / 2)))
+}
 
 const obstacles = []
 obstacles.push(new Obstacle(new Vector(100, 100), 20))
@@ -40,8 +38,6 @@ const onInit = objs => {
   objs.push(path)
 }
 
-const width = 500
-const height = 500
 
 const onUpdate = (objs, target) => {
   // ships.forEach(item => {

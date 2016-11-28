@@ -1,8 +1,8 @@
 import 'normalize.css'
 import Vector from './Vector'
 
-const width = 500
-const height = 500
+const width = 640
+const height = 360
 
 export default class World {
   constructor(onInit, onUpdate) {
@@ -38,7 +38,9 @@ export default class World {
   run() {
     const { canvas, ctx } = this
     const r = () => {
-      this.ctx.clearRect(0, 0, canvas.width, canvas.height)
+      // this.ctx.clearRect(0, 0, canvas.width, canvas.height)
+      this.ctx.fillStyle = 'rgba(255,255,255,.25)'
+      this.ctx.fillRect(0, 0, width, height)
       this.objs.forEach(item => item.render(ctx))
       this.target && this.renderTarget(this.target)
       requestAnimationFrame(r)
