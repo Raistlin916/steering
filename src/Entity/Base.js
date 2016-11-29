@@ -23,4 +23,12 @@ export default class Base {
   getVelocity() {
     return this.velocity.clone()
   }
+
+  applyForce(force) {
+    const { maxSpeed } = this
+    if (Array.isArray(force)) {
+      return force.reduce((a, b) => a.add(b), this.velocity).truncate(maxSpeed)
+    }
+    return this.velocity.add(force).truncate(maxSpeed)
+  }
 }

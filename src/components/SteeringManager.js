@@ -15,7 +15,6 @@ function lineIntersectsCircle(pt, pt2, obstacle) {
 
 export default class SteeringManager {
   constructor(host) {
-    this.steering = new Vector(0, 0)
     this.wanderAngle = 0
     this.host = host
     this.lastDt = 0.01
@@ -34,8 +33,7 @@ export default class SteeringManager {
     this.wanderAngle += getRandom(-0.5, 0.5)
 
     const wanderForce = circleCenter.add(displacement)
-    this.steering.add(wanderForce)
-    return this
+    return wanderForce
   }
 
   seek(targetPosition) {
@@ -46,9 +44,7 @@ export default class SteeringManager {
 
     const desired = targetPosition.subtract(position).norm().scale(maxSpeed)
     const force = desired.subtract(velocity).truncate(maxForce)
-
-    this.steering.add(force)
-    return this
+    return force
   }
 
   doSeek(targetPosition, slowingRadius = 50) {
@@ -67,8 +63,7 @@ export default class SteeringManager {
   }
 
   flee(targetPosition) {
-    this.steering.add(this.doFlee(targetPosition))
-    return this
+    return this.doFlee(targetPosition)
   }
 
   doFlee(targetPosition) {
@@ -84,14 +79,12 @@ export default class SteeringManager {
 
   pursuit(target) {
     const force = this.doSeek(this.getPredictPosition(target, this.lastDt))
-    this.steering.add(force)
-    return this
+    return force
   }
 
   evade(target) {
     const force = this.doFlee(this.getPredictPosition(target, this.lastDt))
-    this.steering.add(force)
-    return this
+    return force
   }
 
   getPredictPosition(target, dt) {
@@ -112,9 +105,7 @@ export default class SteeringManager {
     if (obstacle) {
       avoidance = ahead.subtract(obstacle.getPosition()).norm().scale(MAX_AVOID_FORCE)
     }
-
-    this.steering.add(avoidance)
-    return this
+    return avoidance
   }
 
   getAhead(p = 1) {
@@ -144,13 +135,8 @@ export default class SteeringManager {
     return clonestObstacle
   }
 
-  get() {
-    return this.steering.clone()
-  }
-
   update(dt) {
     this.lastDt = dt
-    this.steering = new Vector(0, 0)
   }
 
   walkOn(path) {
@@ -166,6 +152,6 @@ export default class SteeringManager {
     }
     currentPoint = path.get(this.currentPointOnPath)
 
-    this.seek(currentPoint)
+    return this.seek(currentPoint)
   }
 }

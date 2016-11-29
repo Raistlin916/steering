@@ -13,29 +13,22 @@ for (let i = 0; i < 150; i += 1) {
   ships.push(new Arrow(new Vector(width / 2, height / 2)))
 }
 
-const obstacles = []
-obstacles.push(new Obstacle(new Vector(100, 100), 20))
-obstacles.push(new Obstacle(new Vector(200, 100), 30))
-obstacles.push(new Obstacle(new Vector(200, 200), 40))
-obstacles.push(new Obstacle(new Vector(100, 160), 20))
+// const obstacles = []
+// obstacles.push(new Obstacle(new Vector(100, 100), 20))
+// obstacles.push(new Obstacle(new Vector(200, 100), 30))
+// obstacles.push(new Obstacle(new Vector(200, 200), 40))
+// obstacles.push(new Obstacle(new Vector(100, 160), 20))
 
 
-const path = new Path()
-path.add(new Vector(20, 20))
-path.add(new Vector(80, 30))
-path.add(new Vector(30, 100))
-path.add(new Vector(200, 70))
-path.add(new Vector(200, 170))
+// const path = new Path()
+// path.add(new Vector(20, 20))
+// path.add(new Vector(80, 30))
+// path.add(new Vector(30, 100))
+// path.add(new Vector(200, 70))
+// path.add(new Vector(200, 170))
 
 const onInit = objs => {
-  objs.push(new Obstacle(new Vector(100, 100), 20))
-  objs.push(new Obstacle(new Vector(200, 100), 30))
-  objs.push(new Obstacle(new Vector(200, 200), 40))
-  objs.push(new Obstacle(new Vector(100, 160), 20))
-
-  obstacles.forEach(item => objs.push(item))
   ships.forEach(item => objs.push(item))
-  objs.push(path)
 }
 
 
@@ -58,7 +51,7 @@ const onUpdate = (objs, target) => {
   // })
 
   ships.forEach(item =>
-    item.steering.flock(ships)
+    item.applyForce(item.steering.flock(ships))
   )
 
   // ships.forEach(item => item.steering.collisionAvoidance(obstacles))

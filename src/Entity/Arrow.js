@@ -30,7 +30,7 @@ export default class Arrow extends Base {
     // ctx.closePath()
 
     ctx.fillStyle = this.bgColor
-    ctx.fillRect(-2, -2, 4, 4)
+    ctx.fillRect(-1, -1, 2, 2)
     ctx.fill()
 
     // ctx.beginPath()
@@ -44,10 +44,8 @@ export default class Arrow extends Base {
   }
 
   update(dt) {
-    const force = this.steering.get()
     this.steering.update(dt)
-    const { velocity, maxSpeed, position } = this
-    velocity.add(force).truncate(maxSpeed)
+    const { velocity, position } = this
     position.add(velocity.clone().scale(dt))
     return this
   }
