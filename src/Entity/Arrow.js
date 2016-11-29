@@ -11,6 +11,7 @@ export default class Arrow extends Base {
       velocity.scale(100)
     }
     super(position, velocity)
+
     this.bgColor = 'red'
     this.steering = new BoidSteeringManager(this)
     this.debug = extra.debug
@@ -45,8 +46,10 @@ export default class Arrow extends Base {
 
   update(dt) {
     this.steering.update(dt)
-    const { velocity, position } = this
+    const { velocity, position, acc, maxSpeed } = this
+    velocity.add(acc).truncate(maxSpeed)
     position.add(velocity.clone().scale(dt))
+    this.acc = new Vector(0, 0)
     return this
   }
 }

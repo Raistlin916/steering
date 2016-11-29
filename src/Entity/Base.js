@@ -6,6 +6,7 @@ export default class Base {
     this.maxForce = 1.5
     this.position = position || new Vector(0, 0)
     this.velocity = velocity || new Vector(0, 0)
+    this.acc = new Vector(0, 0)
   }
 
   getMaxSpeed() {
@@ -25,10 +26,9 @@ export default class Base {
   }
 
   applyForce(force) {
-    const { maxSpeed } = this
     if (Array.isArray(force)) {
-      return force.reduce((a, b) => a.add(b), this.velocity).truncate(maxSpeed)
+      return force.reduce((a, b) => a.add(b), this.acc)
     }
-    return this.velocity.add(force).truncate(maxSpeed)
+    return this.acc.add(force)
   }
 }
