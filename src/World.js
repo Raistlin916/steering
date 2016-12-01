@@ -1,8 +1,8 @@
 import 'normalize.css'
 import Vector from './Vector'
 
-const width = 640
-const height = 360
+const width = 1000
+const height = 1000
 
 export default class World {
   constructor(onInit, onUpdate) {

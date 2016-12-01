@@ -6,11 +6,11 @@ import Path from './Entity/Path'
 import { getRandomInt } from './utils'
 
 
-const width = 640
-const height = 360
+const width = 1000
+const height = 1000
 const ships = []
 
-for (let i = 0; i < 150; i += 1) {
+for (let i = 0; i < 75; i += 1) {
   ships.push(new Arrow(new Vector(getRandomInt(0, width), getRandomInt(0, height))))
 }
 

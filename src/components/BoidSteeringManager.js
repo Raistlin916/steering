@@ -45,7 +45,7 @@ export default class BoidSteeringManager extends SteeringManager {
 
     entities.forEach(boid => {
       const d = position.distance(boid.getPosition())
-      if (d > 0 && d < 10) {
+      if (d > 0 && d < 20) {
         mean.add(position.subtract(boid.getPosition()).norm().scale(1 / d))
         count += 1
       }
