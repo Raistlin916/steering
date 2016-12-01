@@ -8,7 +8,6 @@ export default class Arrow extends Base {
     if (!velocity) {
       const angle = getRandom(0, Math.PI * 2)
       velocity = new Vector(Math.sin(angle), Math.cos(angle))
-      velocity.scale(100)
     }
     super(position, velocity)
 
@@ -48,7 +47,7 @@ export default class Arrow extends Base {
     this.steering.update(dt)
     const { velocity, position, acc, maxSpeed } = this
     velocity.add(acc).truncate(maxSpeed)
-    position.add(velocity.clone().scale(dt))
+    position.add(velocity)
     this.acc = new Vector(0, 0)
     return this
   }

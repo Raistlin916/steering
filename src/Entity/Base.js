@@ -2,8 +2,8 @@ import Vector from '../Vector'
 
 export default class Base {
   constructor(position, velocity) {
-    this.maxSpeed = 100
-    this.maxForce = 1.5
+    this.maxSpeed = 1
+    this.maxForce = 0.03
     this.position = position || new Vector(0, 0)
     this.velocity = velocity || new Vector(0, 0)
     this.acc = new Vector(0, 0)

@@ -42,9 +42,21 @@ export default class SteeringManager {
     const velocity = this.host.getVelocity()
     const maxForce = this.host.getMaxForce()
 
-    const desired = targetPosition.subtract(position).norm().scale(maxSpeed)
-    const force = desired.subtract(velocity).truncate(maxForce)
-    return force
+    const desired = targetPosition.subtract(position)
+    const l = desired.length()
+    if (l > 0) {
+      desired.norm()
+      if (l < 50) {
+        desired.scale(maxSpeed * (l / 50))
+      } else {
+        desired.scale(maxSpeed)
+      }
+      const force = desired.subtract(velocity).truncate(maxForce)
+      return force
+    } else {
+      return new Vector(0, 0)
+    }
+
   }
 
   doSeek(targetPosition, slowingRadius = 50) {

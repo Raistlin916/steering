@@ -3,6 +3,7 @@ import Arrow from './Entity/Arrow'
 import Obstacle from './Entity/Obstacle'
 import Vector from './Vector'
 import Path from './Entity/Path'
+import { getRandomInt } from './utils'
 
 
 const width = 640
@@ -10,7 +11,7 @@ const height = 360
 const ships = []
 
 for (let i = 0; i < 150; i += 1) {
-  ships.push(new Arrow(new Vector(width / 2, height / 2)))
+  ships.push(new Arrow(new Vector(getRandomInt(0, width), getRandomInt(0, height))))
 }
 
 // const obstacles = []

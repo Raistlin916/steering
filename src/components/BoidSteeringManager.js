@@ -26,7 +26,7 @@ export default class BoidSteeringManager extends SteeringManager {
 
   flock(entities) {
     return [
-      this.separate(entities),
+      this.separate(entities).scale(2),
       this.align(entities),
       this.cohesion(entities)
     ]
@@ -40,88 +40,85 @@ export default class BoidSteeringManager extends SteeringManager {
 
   separate(entities) {
     const position = this.host.getPosition()
-    const maxForce = this.host.getMaxForce()
-    const maxSpeed = this.host.getMaxSpeed()
-    const velocity = this.host.getVelocity()
-    const steer = new Vector(0, 0)
-    let neighborCount = 0
+    const mean = new Vector()
+    let count = 0
 
-    entities.forEach(item => {
-      if (item === this.host) {
-        return
-      }
-      const itemPosition = item.getPosition()
-      const dist = position.distance(itemPosition)
-      if (dist > 0 && dist < SIGHT_RADIUS / 2) {
-        const diff = position.subtract(itemPosition).norm().scale(1 / dist)
-        steer.add(diff)
-        neighborCount += 1
+    entities.forEach(boid => {
+      const d = position.distance(boid.getPosition())
+      if (d > 0 && d < 10) {
+        mean.add(position.subtract(boid.getPosition()).norm().scale(1 / d))
+        count += 1
       }
     })
-    if (neighborCount) {
-      steer
-        .scale(1 / neighborCount)
+
+    if (count > 0) {
+      mean.scale(1 / count)
     }
-    if (steer.length() > 0) {
-      steer.norm()
-        .scale(maxSpeed)
-        .subtract(velocity)
-        .truncate(maxForce)
-        .scale(1.5)
-    }
-    return steer
+
+    return mean;
   }
 
   align(entities) {
-    const position = this.host.getPosition()
-    const velocity = this.host.getVelocity()
     const maxForce = this.host.getMaxForce()
-    const maxSpeed = this.host.getMaxSpeed()
-    const sum = new Vector(0, 0)
-    let neighborCount = 0
-
-    entities.forEach(item => {
-      if (item === this.host) {
-        return
-      }
-      const itemPosition = item.getPosition()
-      const dist = position.distance(itemPosition)
-      if (dist > 0 && dist < SIGHT_RADIUS) {
-        sum.add(item.getVelocity())
-        neighborCount += 1
+    const position = this.host.getPosition()
+    const mean = new Vector()
+    let count = 0
+    entities.forEach(boid => {
+      const d = position.distance(boid.getPosition());
+      if (d > 0 && d < SIGHT_RADIUS) {
+        mean.add(boid.getVelocity())
+        count += 1
       }
     })
-    if (neighborCount) {
-      sum.scale(1 / neighborCount)
-        .norm()
-        .scale(maxSpeed)
-      const steer = sum.subtract(velocity).truncate(maxForce)
-      return steer
+
+    if (count > 0) {
+      mean.scale(1 / count)
     }
-    return new Vector(0, 0)
+    return mean.truncate(maxForce)
   }
 
   cohesion(entities) {
     const position = this.host.getPosition()
-    const desiredPosition = new Vector(0, 0)
-    let neighborCount = 0
+    const sum = new Vector(0, 0)
+    let count = 0
 
-    entities.forEach(item => {
-      if (item === this.host) {
-        return
-      }
-      const itemPosition = item.getPosition()
-      const dist = position.distance(itemPosition)
-      if (dist > 0 && dist < SIGHT_RADIUS) {
-        desiredPosition.add(item.getPosition())
-        neighborCount += 1
+    entities.forEach(boid => {
+      const d = position.distance(boid.getPosition())
+      if (d > 0 && d < SIGHT_RADIUS) {
+        sum.add(boid.getPosition())
+        count += 1
       }
     })
-    if (neighborCount) {
-      desiredPosition.scale(1 / neighborCount)
-      return this.seek(desiredPosition)
+
+    if (count > 0) {
+      return this.steerTo(sum.scale(1 / count))
     }
-    return new Vector(0, 0)
+    return sum
+  }
+
+  steerTo(target) {
+    const position = this.host.getPosition()
+    const maxSpeed = this.host.getMaxSpeed()
+    const maxForce = this.host.getMaxForce()
+    const velocity = this.host.getVelocity()
+    const desired = target.subtract(position)
+    const d = desired.length()
+    let steer
+
+    if (d > 0) {
+      desired.norm();
+      if (d < 100) {
+        desired.scale(maxSpeed * (d / 100))
+      } else {
+        desired.scale(maxSpeed)
+      }
+      steer = desired.subtract(velocity)
+      steer.truncate(maxForce)
+    } else {
+      steer = new Vector(0, 0)
+    }
+
+    return steer;
   }
 
 }
