@@ -11,7 +11,7 @@ export default class Arrow extends Base {
       velocity.scale(100)
     }
     super(position, velocity)
-    this.bgColor = 'red'
+    this.bgColor = extra.debug ? 'green' : 'red'
     this.steering = new BoidSteeringManager(this)
     this.debug = extra.debug
   }

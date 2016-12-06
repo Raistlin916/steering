@@ -10,7 +10,7 @@ const height = 360
 const ships = []
 
 for (let i = 0; i < 150; i += 1) {
-  ships.push(new Arrow(new Vector(width / 2, height / 2)))
+  ships.push(new Arrow(new Vector(width / 2, height / 2), null, { debug: i === 0 }))
 }
 
 // const obstacles = []

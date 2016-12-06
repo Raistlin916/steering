@@ -25,11 +25,15 @@ export default class BoidSteeringManager extends SteeringManager {
   }
 
   flock(entities) {
-    return [
+    const result = [
       this.separate(entities),
       this.align(entities),
       this.cohesion(entities)
     ]
+    if (this.host.debug) {
+      console.log(...result.map(i => i.length()))
+    }
+    return result
   }
 
   isOnLeaderSight(leader, leaderAhead) {
